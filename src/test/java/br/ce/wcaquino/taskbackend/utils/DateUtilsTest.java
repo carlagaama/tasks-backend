@@ -6,10 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class DateUtilsTest {
-
+	private static int ANO = 1;
 	@Test
 	public void deveRetornarTrueParaDatasFuturas() {
-		LocalDate date = LocalDate.of(2030, 01, 01);
+		LocalDate date = LocalDate.now().plusYears(ANO);
 		Assert.assertTrue(DateUtils.isEqualOrFutureDate(date));
 	}
 	
