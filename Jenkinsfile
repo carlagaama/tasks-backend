@@ -34,14 +34,6 @@ pipeline {
                 deploy adapters: [tomcat9(credentialsId: 'login_tomcat', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks-backend', war: 'target/tasks-backend.war'
             }
         }
-        stage ('API Test') {
-            steps {
-                dir('api-test') {
-                    git credentialsId: 'login_github', url: 'https://github.com/carlagaama/rest-assured-api-tests'
-                    bat 'mvn test'
-                }
-            }
-        }
         stage ('Deploy Frontend') {
             steps {
                 dir('frontend') {
