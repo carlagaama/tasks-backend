@@ -37,7 +37,7 @@ pipeline {
         stage ('API Test') {
             steps {
                 dir('api-test') {
-                    git credentialsId: 'github_login', url: 'https://github.com/carlagaama/rest-assured-api-tests'
+                    git credentialsId: 'login_github', url: 'https://github.com/carlagaama/rest-assured-api-tests'
                     bat 'mvn test'
                 }
             }
@@ -45,16 +45,16 @@ pipeline {
         stage ('Deploy Frontend') {
             steps {
                 dir('frontend') {
-                    git credentialsId: 'github_login', url: 'https://github.com/carlagaama/tasks-frontend'
+                    git credentialsId: 'login_github', url: 'https://github.com/carlagaama/tasks-frontend'
                     bat 'mvn clean package'
-                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
+                    deploy adapters: [tomcat9(credentialsId: 'login_tomcat', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
                 }
             }
         }
         stage ('Functional Test') {
             steps {
                 dir('functional-test') {
-                    git credentialsId: 'github_login', url: 'https://github.com/carlagaama/tasks-functional-tests'
+                    git credentialsId: 'login_github', url: 'https://github.com/carlagaama/tasks-functional-tests'
                     bat 'mvn test'
                 }
             }
@@ -78,12 +78,6 @@ pipeline {
         always {
             junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml, api-test/target/surefire-reports/*.xml, functional-test/target/surefire-reports/*.xml, functional-test/target/failsafe-reports/*.xml'
             archiveArtifacts artifacts: 'target/tasks-backend.war, frontend/target/tasks.war', onlyIfSuccessful: true
-        }
-        unsuccessful {
-            emailext attachLog: true, body: 'See the attached log below', subject: 'Build $BUILD_NUMBER has failed', to: 'carla.gaama@gmail.com'
-        }
-        fixed {
-            emailext attachLog: true, body: 'See the attached log below', subject: 'Build is fine!!!', to: 'carla.gaama@gmail.com'
         }
     }
 }
